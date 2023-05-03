@@ -15,15 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: '18.16.0'
-        using: 'node18'    
+          node-version: '18.16.0'  
 
       - name: Build And Deploy
         id: builddeploy
