@@ -23,6 +23,13 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '18.16.0'
+
+       - name: npm install and build
+        run: |
+          npm install
+          npm install -g expo-cli
+          expo install    
+              
         
       - name: Build And Deploy
         id: builddeploy
