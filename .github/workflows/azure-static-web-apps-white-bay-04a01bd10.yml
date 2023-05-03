@@ -24,13 +24,12 @@ jobs:
         with:
           node-version: '18.16.0'
 
-       - name: npm install and build
+      - name: npm install and build
         run: |
           npm install
           npm install -g expo-cli
           expo install    
-              
-        
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
