@@ -26,7 +26,6 @@ jobs:
 
       - name: npm install and build
         run: |
-          npm install
           npm install -g expo-cli
           expo install    
 
