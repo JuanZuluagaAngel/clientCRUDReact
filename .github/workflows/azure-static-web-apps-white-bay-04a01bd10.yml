@@ -23,10 +23,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '18.16.0'
-
-      - name: npm install and build
-        runs: 
-          using: 'node18'    
+        using: 'node18'    
 
       - name: Build And Deploy
         id: builddeploy
