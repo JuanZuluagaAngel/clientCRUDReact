@@ -48,6 +48,9 @@ jobs:
         with:
           name: node-app
 
+      - name: digital envelope routines
+        run: export NODE_OPTIONS=--openssl-legacy-provider    
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
