@@ -7,13 +7,15 @@ import {
     TouchableOpacity
 } from 'react-native';
 
-class DeleteEmployeeModal extends Component {
+class DeleteProductModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
             name: "",
-            salary: "",
-            age: "",
+            productNumber: "",
+            standardCost: "",
+            listPrice: "",
+            sellStartDate: "",
             loading: false,
             errorMessage: ''
         };
@@ -23,26 +25,28 @@ class DeleteEmployeeModal extends Component {
         this.setState({ [state]: value })
     }
 
-    deleteEmployee = () => {
+    deleteProduct = () => {
         // destructure state
         this.setState({ errorMessage: "", loading: true });
-
-        // selected employee is updated with employee id
-        fetch(`http://dummy.restapiexample.com/api/v1/delete/${this.props.selectedEmployee.id}`, {
+        //const SERVER='http://localhost:5188';
+        const SERVER='https://webapi-juanz.azurewebsites.net';
+        
+        // selected product is updated with product id
+        fetch(`${SERVER}/api/productos/${this.props.selectedProduct.id}`, {
             method: "DELETE"
         })
             .then(res => res.json())
             .then(res => {
                 this.props.closeModal();
-                this.props.updateEmployee(this.props.selectedEmployee.id);
+                this.props.updateProduct(this.props.selectedProduct.id);
             })
             .catch((err) => {
-                this.setState({ errorMessage: "Network Error. Please try again.", loading: false })
+                this.setState({ errorMessage: "Error: "+err, loading: false })
             })
     }
 
     render() {
-        const { isOpen, closeModal, selectedEmployee } = this.props;
+        const { isOpen, closeModal, selectedProduct } = this.props;
         const { loading, errorMessage } = this.state;
         return (
             <Modal
@@ -53,8 +57,9 @@ class DeleteEmployeeModal extends Component {
             >
                 <View style={styles.BackgroundContainer}>
                     <View style={styles.container}>
-                        <Text style={styles.title}>would you like to delete employee name ({selectedEmployee.employee_name})?</Text>
-                        <Text style={styles.subTitle}>If you are sure to delete this  employee then click Agree
+                        <Text style={styles.title}>would you like to delete product name (
+                            {selectedProduct.name})?</Text>
+                        <Text style={styles.subTitle}>If you are sure to delete this  product then click Agree
                         button or if you are not willing to delete just click Disagree.</Text>
 
                         {loading ? <Text
@@ -63,7 +68,7 @@ class DeleteEmployeeModal extends Component {
 
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
-                                onPress={this.deleteEmployee}>
+                                onPress={this.deleteProduct}>
                                 <Text style={styles.buttonText}>Agree</Text>
                             </TouchableOpacity>
 
@@ -82,7 +87,7 @@ class DeleteEmployeeModal extends Component {
 
 
 
-export default DeleteEmployeeModal;
+export default DeleteProductModal;
 
 const styles = StyleSheet.create({
     BackgroundContainer: {

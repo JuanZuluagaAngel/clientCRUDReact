@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import AddEmployeeModal from "./AddEmployeeModal";
-import EditEmployeeModal from "./EditEmployeeModal";
-import DeleteEmployeeModal from "./deleteEmployeeModal";
+import AddProductModal from "./AddProductModal";
+import EditProductModal from "./EditProductModal";
+import DeleteProductModal from "./deleteProductModal";
 
 class App extends Component {
   state = {
-    employee: [],
-    isAddEmployeeModalOpen: false,
-    isEditEmployeeModalOpen: false,
-    isDeleteEmployeeModalOpen: false,
+    product: [],
+    isAddProductModalOpen: false,
+    isEditProductModalOpen: false,
+    isDeleteProductModalOpen: false,
     loading: false,
     errorMessage: "",
-    selectedEmployee: {}
+    selectedProduct: {}
   }
 
   componentDidMount() {
@@ -20,76 +20,105 @@ class App extends Component {
   }
 
   getData = () => {
+    //const SERVER='http://localhost:5188';
+    const SERVER='https://webapi-juanz.azurewebsites.net';
+        
     this.setState({ errorMessage: "", loading: true })
-    fetch('http://dummy.restapiexample.com/api/v1/employees', {
+    fetch(SERVER+'/api/productos', {
       method: "GET",
-      mode: 'no-cors'
+      //mode: 'no-cors'
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"  
+      },
     })
       .then(res => res.json())
       .then(res => this.setState({
-        employee: res,
+        product: res,
         loading: false, errorMessage: ""
       }))
-      .catch(() => this.setState({
+      .catch((error) => this.setState({
         loading: false,
-        errorMessage: "Network Error. Please try again."
+        errorMessage: "Error: " + error
       }))
+      
   }
 
-  toggleAddEmployeeModal = () => {
-    this.setState({ isAddEmployeeModalOpen: !this.state.isAddEmployeeModalOpen });
+  
+
+  toggleAddProductModal = () => {
+    this.setState({ isAddProductModalOpen: !this.state.isAddProductModalOpen });
   }
 
-  toggleEditEmployeeModal = () => {
-    this.setState({ isEditEmployeeModalOpen: !this.state.isEditEmployeeModalOpen });
+  toggleEditProductModal = () => {
+    this.setState({ isEditProductModalOpen: !this.state.isEditProductModalOpen });
   }
 
-  toggleDeleteEmployeeModal = () => {
-    this.setState({ isDeleteEmployeeModalOpen: !this.state.isDeleteEmployeeModalOpen });
+  toggleDeleteProductModal = () => {
+    this.setState({ isDeleteProductModalOpen: !this.state.isDeleteProductModalOpen });
   }
 
-  addEmployee = (data) => {
-    // this.state.employee array is seprated into object by rest operator
-    this.setState({ employee: [data, ...this.state.employee] })
+  addProduct = (data) => {
+    // this.state.Product array is seprated into object by rest operator
+    console.log("data",data);
+    this.setState({ product: [data, ...this.state.product] })
   }
 
-  updateEmployee = (data) => {
-    // updating employee data with updated data if employee id is matched with updated data id
-    this.setState({ employee: this.state.employee.map(emp => emp.id == data.id ? data : emp) });
+  updateProduct = (data) => {
+    // updating product data with updated data if product id is matched with updated data id
+    console.log("data",data);
+    
+    this.setState({ product: this.state.product.map(emp => emp.id == data.id ? data : emp) });
+    console.log("product",this.state.product.map(emp => emp.id == data.id ? data : emp));
+   
   }
 
-  deleteEmployee = employeeId => {
-    // delete employee lsit with deleted data if employee id is matched with updated data id
-    this.setState({ employee: this.state.employee.filter(emp => emp.id !== employeeId) })
+  deleteProduct = productId => {
+    // delete product lsit with deleted data if product id is matched with updated data id
+    this.setState({ product: this.state.product.filter(emp => emp.id !== productId) })
   }
 
   render() {
-    const { loading, errorMessage, employee, isAddEmployeeModalOpen,
-      isEditEmployeeModalOpen, isDeleteEmployeeModalOpen, selectedEmployee } = this.state;
+    const { loading, errorMessage, product, isAddProductModalOpen,
+      isEditProductModalOpen, isDeleteProductModalOpen, selectedProduct } = this.state;
+   // console.log(product);
     return (
       <ScrollView>
 
         <View style={styles.container}>
           <TouchableOpacity
-            onPress={this.toggleAddEmployeeModal}
+            onPress={this.toggleAddProductModal}
             style={styles.button}>
-            <Text style={styles.buttonText}>Add employee</Text>
+            <Text style={styles.buttonText}>Add product</Text>
           </TouchableOpacity>
 
-          <Text style={styles.title}>Emloyee Lists:</Text>
-          {employee.map((data, index) => <View
-            style={styles.employeeListContainer}
-            key={data.id}>
+          <Text style={styles.title}>Product Lists:</Text>
+          {product.map((data, index) => 
+          <View
+            style={styles.productListContainer}
+            //key={data.id}>
+            key={index}>
             <Text style={{ ...styles.listItem, color: "tomato" }}>{index + 1}.</Text>
-            <Text style={styles.name}>{data.employee_name}</Text>
-            <Text style={styles.listItem}>employee age: {data.employee_age}</Text>
-            <Text style={styles.listItem}>employee salary: {data.employee_salary}</Text>
+            <Text style={styles.name}>
+              {data.name}</Text>
+            <Text style={styles.listItem}>Product Number: 
+              {data.productNumber}</Text>
+            <Text style={styles.listItem}>List Price:  
+              ${data.listPrice}</Text>
+            <Text style={styles.listItem}>Standard Cost: 
+              ${data.standardCost}</Text>
+            <Text style={styles.listItem}>Sell Start Date:  
+              {
+                (data.sellStartDate !== undefined) ? data.sellStartDate.split('T')[0].trim() : ''
+              } </Text>
+
+
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 onPress={() => {
-                  this.toggleEditEmployeeModal();
-                  this.setState({ selectedEmployee: data })
+                  this.toggleEditProductModal();
+                  this.setState({ selectedProduct: data })
                 }}
                 style={{ ...styles.button, marginVertical: 0 }}>
                 <Text style={styles.buttonText}>Edit</Text>
@@ -97,8 +126,8 @@ class App extends Component {
 
               <TouchableOpacity
                 onPress={() => {
-                  this.toggleDeleteEmployeeModal();
-                  this.setState({ selectedEmployee: data })
+                  this.toggleDeleteProductModal();
+                  this.setState({ selectedProduct: data })
                 }}
                 style={{ ...styles.button, marginVertical: 0, marginLeft: 10, backgroundColor: "tomato" }}>
                 <Text style={styles.buttonText}>Delete</Text>
@@ -110,27 +139,27 @@ class App extends Component {
             style={styles.message}>Please Wait...</Text> : errorMessage ? <Text
               style={styles.message}>{errorMessage}</Text> : null}
 
-          {/* AddEmployeeModal modal is open when add employee button is clicked */}
-          {isAddEmployeeModalOpen ? <AddEmployeeModal
-            isOpen={isAddEmployeeModalOpen}
-            closeModal={this.toggleAddEmployeeModal}
-            addEmployee={this.addEmployee}
+          {/* AddProductModal modal is open when add product button is clicked */}
+          {isAddProductModalOpen ? <AddProductModal
+            isOpen={isAddProductModalOpen}
+            closeModal={this.toggleAddProductModal}
+            addProduct={this.addProduct}
           /> : null}
 
-          {/* EditEmployeeModal modal is open when edit button is clicked in particular employee list*/}
-          {isEditEmployeeModalOpen ? <EditEmployeeModal
-            isOpen={isEditEmployeeModalOpen}
-            closeModal={this.toggleEditEmployeeModal}
-            selectedEmployee={selectedEmployee}
-            updateEmployee={this.updateEmployee}
+          {/* EditProductModal modal is open when edit button is clicked in particular product list*/}
+          {isEditProductModalOpen ? <EditProductModal
+            isOpen={isEditProductModalOpen}
+            closeModal={this.toggleEditProductModal}
+            selectedProduct={selectedProduct}
+            updateProduct={this.updateProduct}
           /> : null}
 
-          {/* DeleteEmployeeModal modal is open when delete button is clicked in particular employee list*/}
-          {isDeleteEmployeeModalOpen ? <DeleteEmployeeModal
-            isOpen={isDeleteEmployeeModalOpen}
-            closeModal={this.toggleDeleteEmployeeModal}
-            selectedEmployee={selectedEmployee}
-            updateEmployee={this.deleteEmployee}
+          {/* DeleteProductModal modal is open when delete button is clicked in particular Product list*/}
+          {isDeleteProductModalOpen ? <DeleteProductModal
+            isOpen={isDeleteProductModalOpen}
+            closeModal={this.toggleDeleteProductModal}
+            selectedProduct={selectedProduct}
+            updateProduct={this.deleteProduct}
           /> : null}
         </View>
 
@@ -162,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 10
   },
-  employeeListContainer: {
+  productListContainer: {
     marginBottom: 25,
     elevation: 4,
     backgroundColor: "white",

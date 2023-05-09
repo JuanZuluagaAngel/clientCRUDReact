@@ -8,13 +8,15 @@ import {
     TouchableOpacity
 } from 'react-native';
 
-class AddEmployeeModal extends Component {
+class AddProductModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
             name: "",
-            salary: "",
-            age: "",
+            productNumber: "",
+            standardCost: "",
+            listPrice: "",
+            sellStartDate: "",
             loading: false,
             errorMessage: ''
         };
@@ -24,37 +26,53 @@ class AddEmployeeModal extends Component {
         this.setState({ [state]: value })
     }
 
-    addEmployee = () => {
+    addProduct = () => {
         // destructure state
-        const { name, age, salary } = this.state;
+        const { name, productNumber, standardCost, listPrice, sellStartDate } = this.state;
         this.setState({ errorMessage: "", loading: true });
-
-        if (name && age && salary) {
-            fetch('http://dummy.restapiexample.com/api/v1/create', {
+        //const SERVER='http://localhost:5188';
+        const SERVER='https://webapi-juanz.azurewebsites.net';
+        if (name && productNumber && standardCost && listPrice && sellStartDate) {
+            fetch(SERVER+'/api/productos', {
                 method: "POST",
-                mode: 'no-cors',
+                //mode: 'no-cors',
                 headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
+                    "Accept": "application/vnd.api+json",
+                    "Content-Type": "application/vnd.api+json"  
                 },
+                /*
+                {
+                    "Name" : "xxxqqqq",
+                    "ProductNumber" : "xxx12",
+                    "standardCost" : 321,
+                    "ListPrice" : 123,
+                    "SellStartDate" : "2021-09-01"
+                }
+                */
                 body: JSON.stringify({
                     name: this.state.name,
-                    salary: this.state.salary,
-                    age: this.state.age
+                    productNumber: this.state.productNumber,
+                    standardCost: this.state.standardCost,
+                    listPrice: this.state.listPrice,
+                    sellStartDate: this.state.sellStartDate   
                 })
             })
-                .then(res => res.json())
                 .then(res => {
-                    this.props.closeModal();
-                    this.props.addEmployee({
-                        employee_name: res.name,
-                        employee_age: res.age,
-                        employee_salary: res.salary,
-                        id: res.id
-                    });
-                })
-                .catch(() => {
-                    this.setState({ errorMessage: "Network Error. Please try again.", loading: false })
+                        res.json();
+                        console.log(res);
+                        this.props.addProduct({
+                            name: res.name == this.state.name ? res.name : this.state.name,
+                            productNumber: res.productNumber == this.state.productNumber ? res.productNumber: this.state.productNumber,
+                            standardCost: res.standardCost == this.state.standardCost ? res.standardCost : this.state.standardCost,
+                            listPrice: res.listPrice == this.state.listPrice ? res.listPrice : this.state.listPrice,
+                            sellStartDate: res.sellStartDate == this.state.sellStartDate ? res.sellStartDate : this.state.sellStartDate,
+                            id: res.id
+                        });
+                        this.props.closeModal();
+                    }
+                )
+                .catch((error) => {
+                    this.setState({ errorMessage: "Error: "+error, loading: false })
                 })
         } else {
             this.setState({ errorMessage: "Fields are empty.", loading: false })
@@ -71,23 +89,35 @@ class AddEmployeeModal extends Component {
                 animationType="slide"
             >
                 <View style={styles.container}>
-                    <Text style={styles.title}>Add New Employee</Text>
+                    <Text style={styles.title}>Add New Product</Text>
 
                     <TextInput
                         style={styles.textBox}
                         onChangeText={(text) => this.handleChange(text, "name")}
-                        placeholder="Full Name" />
+                        placeholder="Name" />
+
+                    <TextInput
+                        style={styles.textBox}
+                        onChangeText={(text) => this.handleChange(text, "productNumber")}
+                        placeholder="Product Number" />    
 
                     <TextInput
                         keyboardType="numeric"
                         style={styles.textBox}
-                        onChangeText={(text) => this.handleChange(text, "salary")}
-                        placeholder="salary" />
+                        onChangeText={(text) => this.handleChange(text, "standardCost")}
+                        placeholder="Standard Cost" />
                     <TextInput
                         keyboardType="numeric"
                         style={styles.textBox}
-                        onChangeText={(text) => this.handleChange(text, "age")}
-                        placeholder="Age" />
+                        onChangeText={(text) => this.handleChange(text, "listPrice")}
+                        placeholder="List Price" />
+
+                    <TextInput
+                        keyboardType="date"
+                        style={styles.textBox}
+                        onChangeText={(text) => this.handleChange(text, "sellStartDate")}
+                        placeholder="Sell Start Date" /> 
+    
 
                     {loading ? <Text
                         style={styles.message}>Please Wait...</Text> : errorMessage ? <Text
@@ -95,7 +125,7 @@ class AddEmployeeModal extends Component {
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
-                            onPress={this.addEmployee}
+                            onPress={this.addProduct}
                             style={{ ...styles.button, marginVertical: 0 }}>
                             <Text style={styles.buttonText}>Submit</Text>
                         </TouchableOpacity>
@@ -115,7 +145,7 @@ class AddEmployeeModal extends Component {
 
 
 
-export default AddEmployeeModal;
+export default AddProductModal;
 
 const styles = StyleSheet.create({
     container: {
